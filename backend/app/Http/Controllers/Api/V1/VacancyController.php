@@ -111,9 +111,25 @@ class VacancyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVacancyRequest $request, Vacancy $vacancy)
-    {
-        //
+    public function update(
+        UpdateVacancyRequest $request,
+        Vacancy $vacancy,
+    ): JsonResponse {
+        $vacancy->update(
+            $request->validated(),
+        );
+
+        $vacancy->refresh();
+
+        $vacancy->load([
+            'company:id,name,slug,logo_path,business_sector,employee_size,headquarters_location,website_url',
+        ]);
+
+        return (new VacancyResource($vacancy))
+            ->additional([
+                'message' => 'Vacancy updated successfully.',
+            ])
+            ->response();
     }
 
     /**
