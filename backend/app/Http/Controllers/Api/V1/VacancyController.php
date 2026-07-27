@@ -6,16 +6,44 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexVacancyRequest;
 use App\Http\Requests\Api\V1\StoreVacancyRequest;
 use App\Http\Requests\Api\V1\UpdateVacancyRequest;
+use App\Http\Resources\Api\V1\VacancySummaryResource;
 use App\Models\Vacancy;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class VacancyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(IndexVacancyRequest $request)
-    {
-        //
+    public function index(
+        IndexVacancyRequest $request,
+    ): AnonymousResourceCollection {
+        $vacancies = Vacancy::query()
+            ->select([
+                'id',
+                'company_id',
+                'title',
+                'position',
+                'employment_type',
+                'location',
+                'is_remote',
+                'minimum_experience',
+                'expires_at',
+                'created_at',
+            ])
+            ->with([
+                'company:id,name,logo_path',
+            ])
+            ->searchByTitle($request->searchTerm())
+            ->filterByStatus($request->vacancyStatus())
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate($request->perPage())
+            ->withQueryString();
+
+        return VacancySummaryResource::collection(
+            $vacancies,
+        );
     }
 
     /**
