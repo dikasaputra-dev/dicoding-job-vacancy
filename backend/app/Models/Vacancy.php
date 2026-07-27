@@ -4,10 +4,14 @@ namespace App\Models;
 
 use App\Enums\EmploymentType;
 use App\Enums\MinimumExperience;
+use App\Enums\VacancyStatusFilter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 #[Fillable([
     'company_id',
@@ -26,22 +30,80 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class Vacancy extends Model
 {
-    /** @use HasFactory<\Database\Factories\VacancyFactory> */
+    /** @use HasFactory<VacancyFactory> */
     use HasFactory;
 
     /**
-    * Get the company that owns the vacancy.
-    */
+     * Get the company that owns the vacancy.
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
     /**
-    * Get the attributes that should be cast.
-    *
-    * @return array<string, string>
-    */
+     * Determine whether the vacancy is still active.
+     */
+    public function isActive(): bool
+    {
+        return $this->expires_at->greaterThanOrEqualTo(
+            Carbon::today(),
+        );
+    }
+
+    /**
+     * Scope the query to vacancies matching the given title.
+     *
+     * @param  Builder<Vacancy>  $query
+     */
+    #[Scope]
+    protected function searchByTitle(
+        Builder $query,
+        ?string $searchTerm,
+    ): void {
+        if ($searchTerm === null) {
+            return;
+        }
+
+        $query->whereLike(
+            'title',
+            "%{$searchTerm}%",
+        );
+    }
+
+    /**
+     * Scope the query using the selected status filter.
+     *
+     * @param  Builder<Vacancy>  $query
+     */
+    #[Scope]
+    protected function filterByStatus(
+        Builder $query,
+        VacancyStatusFilter $status,
+    ): void {
+        $today = Carbon::today()->toDateString();
+
+        switch ($status) {
+            case VacancyStatusFilter::Active:
+                $query->where('expires_at', '>=', $today);
+
+                break;
+
+            case VacancyStatusFilter::Expired:
+                $query->where('expires_at', '<', $today);
+
+                break;
+
+            case VacancyStatusFilter::All:
+                break;
+        }
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

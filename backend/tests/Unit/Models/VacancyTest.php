@@ -5,6 +5,7 @@ namespace Tests\Unit\Models;
 use App\Enums\EmploymentType;
 use App\Enums\MinimumExperience;
 use App\Models\Vacancy;
+use Illuminate\Support\Carbon;
 use PHPUnit\Framework\TestCase;
 
 class VacancyTest extends TestCase
@@ -73,5 +74,30 @@ class VacancyTest extends TestCase
             '1-3 tahun',
             MinimumExperience::OneToThreeYears->label(),
         );
+    }
+
+    public function test_vacancy_is_active_until_its_expiration_date(): void
+    {
+        Carbon::setTestNow('2026-07-27 10:00:00');
+
+        try {
+            $activeToday = new Vacancy([
+                'expires_at' => '2026-07-27',
+            ]);
+
+            $activeInTheFuture = new Vacancy([
+                'expires_at' => '2026-08-01',
+            ]);
+
+            $expired = new Vacancy([
+                'expires_at' => '2026-07-26',
+            ]);
+
+            $this->assertTrue($activeToday->isActive());
+            $this->assertTrue($activeInTheFuture->isActive());
+            $this->assertFalse($expired->isActive());
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 }
