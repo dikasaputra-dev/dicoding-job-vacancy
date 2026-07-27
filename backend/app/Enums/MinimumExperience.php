@@ -10,7 +10,7 @@ enum MinimumExperience: string
     case SixToTenYears = '6-10-years';
     case MoreThanTenYears = 'more-than-10-years';
 
-    public function label() : string
+    public function label(): string
     {
         return match ($this) {
             self::LessThanOneYear => 'Kurang dari 1 tahun',

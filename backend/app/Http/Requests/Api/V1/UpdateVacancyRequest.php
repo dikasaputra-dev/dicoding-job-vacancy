@@ -23,7 +23,7 @@ class UpdateVacancyRequest extends FormRequest
         'position',
         'employment_type',
         'candidate_count',
-        'expired_at',
+        'expires_at',
         'location',
         'is_remote',
         'description',
@@ -73,7 +73,7 @@ class UpdateVacancyRequest extends FormRequest
                 'min:1',
                 'max:65535',
             ],
-            'expired_at' => [
+            'expires_at' => [
                 'sometimes',
                 'required',
                 Rule::date()

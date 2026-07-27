@@ -9,7 +9,7 @@ enum EmploymentType: string
     case Contract = 'contract';
     case Internship = 'internship';
 
-    public function label() : string
+    public function label(): string
     {
         return match ($this) {
             self::FullTime => 'Full-Time',

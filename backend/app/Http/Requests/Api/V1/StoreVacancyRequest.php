@@ -47,7 +47,7 @@ class StoreVacancyRequest extends FormRequest
                 'min:1',
                 'max:65535',
             ],
-            'expired_at' => [
+            'expires_at' => [
                 'required',
                 Rule::date()
                     ->format('Y-m-d')
