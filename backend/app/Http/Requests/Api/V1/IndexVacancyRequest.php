@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Enums\VacancyStatusFilter;
 use Illuminate\Foundation\Http\Attributes\FailOnUnknownFields;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,11 +35,7 @@ class IndexVacancyRequest extends FormRequest
             'status' => [
                 'sometimes',
                 'string',
-                Rule::in([
-                    'active',
-                    'expired',
-                    'all',
-                ]),
+                Rule::enum(VacancyStatusFilter::class),
             ],
             'page' => [
                 'sometimes',
@@ -61,19 +58,30 @@ class IndexVacancyRequest extends FormRequest
         $validated = $this->validated();
         $search = $validated['search'] ?? null;
 
-        return is_string($search) && $search !== ''
-            ? $search
-            : null;
+        if (! is_string($search)) {
+            return null;
+        }
+
+        $search = trim($search);
+
+        return $search === ''
+            ? null
+            : $search;
     }
 
     /**
-     * Get the validated vacancy status.
+     * Get the validated vacancy status filter.
      */
-    public function vacancyStatus(): string
+    public function vacancyStatus(): VacancyStatusFilter
     {
         $validated = $this->validated();
+        $status = $validated['status'] ?? null;
 
-        return $validated['status'] ?? 'active';
+        if (! is_string($status)) {
+            return VacancyStatusFilter::Active;
+        }
+
+        return VacancyStatusFilter::from($status);
     }
 
     /**

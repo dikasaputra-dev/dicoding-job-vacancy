@@ -4,7 +4,10 @@ namespace App\Models;
 
 use App\Enums\EmploymentType;
 use App\Enums\MinimumExperience;
+use App\Enums\VacancyStatusFilter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,6 +49,54 @@ class Vacancy extends Model
         return $this->expires_at->greaterThanOrEqualTo(
             Carbon::today(),
         );
+    }
+
+    /**
+     * Scope the query to vacancies matching the given title.
+     *
+     * @param  Builder<Vacancy>  $query
+     */
+    #[Scope]
+    protected function searchByTitle(
+        Builder $query,
+        ?string $searchTerm,
+    ): void {
+        if ($searchTerm === null) {
+            return;
+        }
+
+        $query->whereLike(
+            'title',
+            "%{$searchTerm}%",
+        );
+    }
+
+    /**
+     * Scope the query using the selected status filter.
+     *
+     * @param  Builder<Vacancy>  $query
+     */
+    #[Scope]
+    protected function filterByStatus(
+        Builder $query,
+        VacancyStatusFilter $status,
+    ): void {
+        $today = Carbon::today()->toDateString();
+
+        switch ($status) {
+            case VacancyStatusFilter::Active:
+                $query->where('expires_at', '>=', $today);
+
+                break;
+
+            case VacancyStatusFilter::Expired:
+                $query->where('expires_at', '<', $today);
+
+                break;
+
+            case VacancyStatusFilter::All:
+                break;
+        }
     }
 
     /**
