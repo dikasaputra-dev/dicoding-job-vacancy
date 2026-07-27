@@ -330,4 +330,33 @@ class ListVacanciesTest extends TestCase
                 'per_page',
             ]);
     }
+
+    public function test_it_lists_multiple_vacancies_without_n_plus_one_queries(): void
+    {
+        $company = Company::factory()->create([
+            'name' => 'Dicoding Indonesia',
+            'slug' => 'dicoding-indonesia',
+        ]);
+
+        Vacancy::factory()
+            ->count(10)
+            ->for($company)
+            ->create([
+                'expires_at' => '2026-08-30',
+            ]);
+
+        $this->expectsDatabaseQueryCount(3);
+
+        $response = $this->getJson(
+            '/api/v1/vacancies?status=all&per_page=10',
+        );
+
+        $response
+            ->assertOk()
+            ->assertJsonCount(10, 'data')
+            ->assertJsonPath(
+                'data.0.company.id',
+                $company->id,
+            );
+    }
 }
