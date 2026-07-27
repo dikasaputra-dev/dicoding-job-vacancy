@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Enums\EmploymentType;
 use App\Enums\MinimumExperience;
+use Database\Factories\VacancyFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 #[Fillable([
     'company_id',
@@ -26,22 +28,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class Vacancy extends Model
 {
-    /** @use HasFactory<\Database\Factories\VacancyFactory> */
+    /** @use HasFactory<VacancyFactory> */
     use HasFactory;
 
     /**
-    * Get the company that owns the vacancy.
-    */
+     * Get the company that owns the vacancy.
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
     /**
-    * Get the attributes that should be cast.
-    *
-    * @return array<string, string>
-    */
+     * Determine whether the vacancy is still active.
+     */
+    public function isActive(): bool
+    {
+        return $this->expires_at->greaterThanOrEqualTo(
+            Carbon::today(),
+        );
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
