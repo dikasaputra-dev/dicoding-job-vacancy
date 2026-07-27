@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexVacancyRequest;
 use App\Http\Requests\Api\V1\StoreVacancyRequest;
 use App\Http\Requests\Api\V1\UpdateVacancyRequest;
+use App\Http\Resources\Api\V1\VacancyResource;
 use App\Http\Resources\Api\V1\VacancySummaryResource;
 use App\Models\Vacancy;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -57,9 +58,13 @@ class VacancyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Vacancy $vacancy)
+    public function show(Vacancy $vacancy): VacancyResource
     {
-        //
+        $vacancy->loadMissing([
+            'company:id,name,slug,logo_path,business_sector,employee_size,headquarters_location,website_url',
+        ]);
+
+        return new VacancyResource($vacancy);
     }
 
     /**
