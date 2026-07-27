@@ -5,6 +5,8 @@ namespace App\Http\Requests\Api\V1;
 use App\Enums\EmploymentType;
 use App\Enums\MinimumExperience;
 use App\Models\Vacancy;
+use App\Rules\ContainsReadableText;
+use App\Support\VacancyDescriptionSanitizer;
 use Illuminate\Foundation\Http\Attributes\FailOnUnknownFields;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -39,6 +41,28 @@ class UpdateVacancyRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('description')) {
+            return;
+        }
+
+        $description = $this->input('description');
+
+        if (! is_string($description)) {
+            return;
+        }
+
+        $this->merge([
+            'description' => app(
+                VacancyDescriptionSanitizer::class,
+            )->sanitize($description),
+        ]);
     }
 
     /**
@@ -95,6 +119,8 @@ class UpdateVacancyRequest extends FormRequest
                 'sometimes',
                 'required',
                 'string',
+                'max:20000',
+                new ContainsReadableText,
             ],
             'salary_min' => [
                 'sometimes',
