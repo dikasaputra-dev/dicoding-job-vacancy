@@ -135,8 +135,10 @@ class VacancyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Vacancy $vacancy)
+    public function destroy(Vacancy $vacancy): Response
     {
-        //
+        $vacancy->delete();
+
+        return response()->noContent();
     }
 }
