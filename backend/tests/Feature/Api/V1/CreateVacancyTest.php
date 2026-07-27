@@ -248,6 +248,102 @@ class CreateVacancyTest extends TestCase
         $this->assertDatabaseCount('vacancies', 0);
     }
 
+    public function test_it_sanitizes_description_before_storing_the_vacancy(): void
+    {
+        $this->createDefaultCompany();
+
+        $payload = $this->validPayload();
+
+        $payload['description'] = <<<'HTML'
+<script>alert('xss')</script>
+<h2 onclick="alert('xss')">Job Description</h2>
+<p style="color:red">
+    Build <strong class="highlight">safe</strong> products.
+</p>
+<a href="javascript:alert('xss')">Read more</a>
+HTML;
+
+        $response = $this->postJson(
+            '/api/v1/vacancies',
+            $payload,
+        );
+
+        $response->assertCreated();
+
+        $description = $response->json(
+            'data.description',
+        );
+
+        $this->assertIsString($description);
+
+        $this->assertStringContainsString(
+            '<h2>Job Description</h2>',
+            $description,
+        );
+
+        $this->assertStringContainsString(
+            '<strong>safe</strong>',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            '<script',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'onclick',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'style=',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'href=',
+            $description,
+        );
+
+        $this->assertDatabaseHas('vacancies', [
+            'id' => $response->json('data.id'),
+            'description' => $description,
+        ]);
+    }
+
+    public function test_it_rejects_a_description_without_readable_text(): void
+    {
+        $this->createDefaultCompany();
+
+        $payload = $this->validPayload();
+
+        $payload['description'] = <<<'HTML'
+<script>alert('xss')</script>
+<p><br></p>
+HTML;
+
+        $response = $this->postJson(
+            '/api/v1/vacancies',
+            $payload,
+        );
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonValidationErrors([
+                'description',
+            ])
+            ->assertJsonPath(
+                'errors.description.0',
+                'The description field must contain readable text.',
+            );
+
+        $this->assertDatabaseCount(
+            'vacancies',
+            0,
+        );
+    }
+
     /**
      * Create the company expected by the vacancy endpoint.
      */

@@ -262,6 +262,62 @@ class UpdateVacancyTest extends TestCase
             ]);
     }
 
+    public function test_it_sanitizes_description_during_update(): void
+    {
+        $company = $this->createCompany();
+        $vacancy = $this->createVacancy($company);
+
+        $response = $this->patchJson(
+            "/api/v1/vacancies/{$vacancy->id}",
+            [
+                'description' => <<<'HTML'
+<h2 onmouseover="alert('xss')">Updated Description</h2>
+<p style="color:red">
+    Build <em onclick="alert('xss')">secure</em> products.
+</p>
+HTML,
+            ],
+        );
+
+        $response->assertOk();
+
+        $description = $response->json(
+            'data.description',
+        );
+
+        $this->assertIsString($description);
+
+        $this->assertStringContainsString(
+            '<h2>Updated Description</h2>',
+            $description,
+        );
+
+        $this->assertStringContainsString(
+            '<em>secure</em>',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'onmouseover',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'onclick',
+            $description,
+        );
+
+        $this->assertStringNotContainsString(
+            'style=',
+            $description,
+        );
+
+        $this->assertDatabaseHas('vacancies', [
+            'id' => $vacancy->id,
+            'description' => $description,
+        ]);
+    }
+
     private function createCompany(): Company
     {
         return Company::factory()->create([
