@@ -8,11 +8,16 @@ use App\Http\Requests\Api\V1\StoreVacancyRequest;
 use App\Http\Requests\Api\V1\UpdateVacancyRequest;
 use App\Http\Resources\Api\V1\VacancyResource;
 use App\Http\Resources\Api\V1\VacancySummaryResource;
+use App\Models\Company;
 use App\Models\Vacancy;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\Response;
 
 class VacancyController extends Controller
 {
+    private const DEFAULT_COMPANY_SLUG = 'dicoding-indonesia';
+
     /**
      * Display a listing of the resource.
      */
@@ -50,9 +55,45 @@ class VacancyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreVacancyRequest $request)
-    {
-        //
+    public function store(
+        StoreVacancyRequest $request,
+    ): JsonResponse {
+        $company = Company::query()
+            ->where(
+                'slug',
+                self::DEFAULT_COMPANY_SLUG,
+            )
+            ->firstOrFail();
+
+        $vacancy = $company
+            ->vacancies()
+            ->create($request->validated());
+
+        $vacancy->refresh();
+
+        $vacancy->load([
+            'company:id,name,slug,logo_path,business_sector,employee_size,headquarters_location,website_url',
+        ]);
+
+        $response = (new VacancyResource($vacancy))
+            ->additional([
+                'message' => 'Vacancy created successfully.',
+            ])
+            ->response();
+
+        $response->setStatusCode(
+            Response::HTTP_CREATED,
+        );
+
+        $response->headers->set(
+            'Location',
+            route(
+                'api.v1.vacancies.show',
+                $vacancy,
+            ),
+        );
+
+        return $response;
     }
 
     /**
