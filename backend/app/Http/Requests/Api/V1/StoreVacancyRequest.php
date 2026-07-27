@@ -41,7 +41,7 @@ class StoreVacancyRequest extends FormRequest
                 'required',
                 Rule::enum(EmploymentType::class),
             ],
-            'candidat_count' => [
+            'candidate_count' => [
                 'required',
                 'integer',
                 'min:1',
@@ -72,7 +72,6 @@ class StoreVacancyRequest extends FormRequest
                 'min:0',
             ],
             'salary_max' => [
-                'required',
                 'integer',
                 'min:0',
                 'gte:salary_min',
