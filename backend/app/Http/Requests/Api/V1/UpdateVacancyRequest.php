@@ -27,8 +27,8 @@ class UpdateVacancyRequest extends FormRequest
         'location',
         'is_remote',
         'description',
-        'min_salary',
-        'max_salary',
+        'salary_min',
+        'salary_max',
         'show_salary',
         'minimum_experience',
     ];
@@ -66,7 +66,7 @@ class UpdateVacancyRequest extends FormRequest
                 'required',
                 Rule::enum(EmploymentType::class),
             ],
-            'candidat_count' => [
+            'candidate_count' => [
                 'sometimes',
                 'required',
                 'integer',
@@ -203,7 +203,7 @@ class UpdateVacancyRequest extends FormRequest
 
         $validator->errors()->add(
             'vacancy',
-            'At least one vacancy field must be provided',
+            'At least one vacancy field must be provided.',
         );
     }
 
