@@ -24,13 +24,13 @@ class VacancySummaryResource extends JsonResource
             'position' => $this->position,
 
             'employment_type' => $this->employment_type->value,
-            'employment_type_label' => $this->employment_type_label->label(),
+            'employment_type_label' => $this->employment_type->label(),
 
             'location' => $this->location,
             'is_remote' => $this->is_remote,
 
             'minimum_experience' => $this->minimum_experience->value,
-            'minimum_experience_label' => $this->minimum_experience_label->label(),
+            'minimum_experience_label' => $this->minimum_experience->label(),
 
             'expires_at' => $this->expires_at->toDateString(),
             'is_active' => $this->isActive(),
@@ -53,7 +53,7 @@ class VacancySummaryResource extends JsonResource
      */
     private function companyLogoUrl(): ?string
     {
-        $logoPath = $this->company->logo_url;
+        $logoPath = $this->company->logo_path;
 
         if ($logoPath === null) {
             return null;
