@@ -94,8 +94,3 @@ export function DashboardVacancyCard({
     </Card>
   );
 }
-
-
-
-
-git commit -m "feat(frontend): add reusable vacancy cards"
