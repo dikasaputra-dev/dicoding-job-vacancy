@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
-import { ReactNode } from "react";
+import { Inter } from "next/font/google";
+import type { ReactNode } from "react";
+
 import { QueryProvider } from "@/providers/query-provider";
 
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Dicoding Jobs",
-  description: "Discover career opportunities at Dicoding Indonesia.",
+  title: "9 Jobs",
+  description: "Temukan lowongan pekerjaan terbaik.",
 };
 
 interface RootLayoutProps {
@@ -16,8 +23,8 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="id">
-      <body>
-        <QueryProvider>{children}</QueryProvider>{" "}
+      <body className={inter.className}>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
