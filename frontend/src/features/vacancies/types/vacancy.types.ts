@@ -19,6 +19,14 @@ export interface CompanySummary {
   logo_url: string | null;
 }
 
+export interface CompanyDetail extends CompanySummary {
+  slug: string;
+  business_sector: string;
+  employee_size: string;
+  headquarters_location: string;
+  website_url: string | null;
+}
+
 export interface VacancySummary {
   id: number;
   title: string;
@@ -62,4 +70,30 @@ export interface VacancyListParams {
   status?: VacancyStatusFilter;
   page?: number;
   perPage?: number;
+}
+
+export interface VacancyDetail
+  extends Omit<VacancySummary, "company"> {
+  candidate_count: number;
+  description: string;
+  salary_min: number;
+  salary_max: number | null;
+  show_salary: boolean;
+  updated_at: string | null;
+  company: CompanyDetail;
+}
+
+export interface CreateVacancyPayload {
+  title: string;
+  position: string;
+  employment_type: EmploymentType;
+  candidate_count: number;
+  expires_at: string;
+  location: string;
+  is_remote: boolean;
+  description: string;
+  salary_min: number;
+  salary_max?: number;
+  show_salary: boolean;
+  minimum_experience: MinimumExperience;
 }
