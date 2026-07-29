@@ -3,7 +3,7 @@ import Image from "next/image";
 interface VacancyLogoProps {
   src?: string | null;
   companyName: string;
-  size?: "compact" | "default";
+  size?: "compact" | "detail" | "default";
 }
 
 export function VacancyLogo({
@@ -11,8 +11,14 @@ export function VacancyLogo({
   companyName,
   size = "default",
 }: VacancyLogoProps) {
-  const sizeClass = size === "compact" ? "size-16" : "size-[102px]";
-  const imageSize = size === "compact" ? "64px" : "102px";
+  const sizeClass =
+    size === "compact"
+      ? "size-16"
+      : size === "detail"
+        ? "size-[92px]"
+        : "size-[102px]";
+  const imageSize =
+    size === "compact" ? "64px" : size === "detail" ? "92px" : "102px";
 
   return (
     <div
