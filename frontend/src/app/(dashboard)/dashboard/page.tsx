@@ -1,21 +1,42 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { Icon } from "@/components/ui/icon";
+import { deleteVacancy } from "@/features/vacancies/api/delete-vacancy";
+import { vacancyQueryKeys } from "@/features/vacancies/api/vacancy-query-keys";
 import { DashboardVacancyCard } from "@/features/vacancies/components/dashboard-vacancy-card";
 import { useVacanciesQuery } from "@/features/vacancies/hooks/use-vacancies-query";
 import type { VacancySummary } from "@/features/vacancies/types/vacancy.types";
 
 export default function DashboardPage() {
+  const queryClient = useQueryClient();
   const { data, isPending, isError, error, refetch } = useVacanciesQuery({
     status: "all",
     perPage: 10,
   });
+  const deleteMutation = useMutation({
+    mutationFn: deleteVacancy,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: vacancyQueryKeys.lists(),
+      });
+    },
+    onError: () => {
+      window.alert("Lowongan gagal dihapus.");
+    },
+  });
 
   function handleDelete(vacancy: VacancySummary) {
-    window.alert(`Hapus lowongan: ${vacancy.title}`);
+    const confirmed = window.confirm(
+      `Hapus lowongan "${vacancy.title}"? Tindakan ini tidak dapat dibatalkan.`,
+    );
+
+    if (confirmed) {
+      deleteMutation.mutate(vacancy.id);
+    }
   }
 
   return (
