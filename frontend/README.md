@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dicoding Jobs Frontend
 
-## Getting Started
+Frontend aplikasi lowongan pekerjaan yang dibangun dengan Next.js, TanStack
+Query, Tailwind CSS, dan Playwright.
 
-First, run the development server:
+## Menjalankan frontend
+
+Salin konfigurasi environment:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Pasang dependency dan jalankan development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Frontend dapat dibuka melalui `http://localhost:3000`.
 
-## Learn More
+## Pemeriksaan kode
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## End-to-end test
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pasang browser Playwright untuk penggunaan pertama:
 
-## Deploy on Vercel
+```bash
+npx playwright install chromium
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Jalankan seluruh E2E test:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run test:e2e
+```
+
+Atau gunakan mode UI:
+
+```bash
+npm run test:e2e:ui
+```
+
+E2E test menggunakan API interception dengan data deterministik, sehingga
+alur daftar, pencarian, empty state, detail, pembuatan, pengeditan, dan
+penghapusan lowongan dapat diuji tanpa bergantung pada isi database lokal.
