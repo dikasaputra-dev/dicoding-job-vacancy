@@ -304,6 +304,7 @@ export function VacancyForm({ vacancyId }: VacancyFormProps) {
 
           <div>
             <label
+              id="description-label"
               htmlFor="description"
               className="mb-2 block text-sm font-medium text-neutral-800"
             >
@@ -355,6 +356,7 @@ export function VacancyForm({ vacancyId }: VacancyFormProps) {
                 ref={editorRef}
                 id="description"
                 role="textbox"
+                aria-labelledby="description-label"
                 aria-multiline="true"
                 contentEditable
                 suppressContentEditableWarning
@@ -639,6 +641,9 @@ function CurrencyField({
       <input
         type="number"
         name={name}
+        aria-label={
+          name === "salary_min" ? "Gaji minimum" : "Gaji maksimum"
+        }
         min={0}
         required={required}
         defaultValue={defaultValue}

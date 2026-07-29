@@ -18,8 +18,13 @@ export function DashboardVacancyCard({
   vacancy,
   onDelete,
 }: DashboardVacancyCardProps) {
+  const titleId = `dashboard-vacancy-${vacancy.id}`;
+
   return (
-    <Card className="flex min-h-[138px] flex-col gap-4 p-4 sm:flex-row">
+    <Card
+      aria-labelledby={titleId}
+      className="flex min-h-[138px] flex-col gap-4 p-4 sm:flex-row"
+    >
       <div className="shrink-0">
         <VacancyLogo
           src={vacancy.company.logo_url}
@@ -29,7 +34,10 @@ export function DashboardVacancyCard({
       </div>
 
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold text-neutral-700">
+        <h2
+          id={titleId}
+          className="text-base font-semibold text-neutral-700"
+        >
           {vacancy.title}
         </h2>
 

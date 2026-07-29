@@ -21,7 +21,7 @@ const iconPaths: Record<IconName, ReactNode> = {
     <>
       <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7" />
       <rect x="3.5" y="7" width="17" height="13" rx="1" />
-      <path d="M3.5 11.5h17M10" />
+      <path d="M3.5 11.5h17" />
     </>
   ),
   building: (
