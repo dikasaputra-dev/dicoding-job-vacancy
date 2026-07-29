@@ -27,3 +27,96 @@ select,
 textarea {
   font: inherit;
 }
+
+.vacancy-description {
+  line-height: 1.45;
+}
+
+.vacancy-description h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.vacancy-description h2:first-child {
+  margin-top: 0;
+}
+
+.vacancy-description p {
+  margin: 0.75rem 0;
+}
+
+.vacancy-description ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.vacancy-description li {
+  margin: 0.2rem 0;
+}
+
+.vacancy-description a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.vacancy-editor h2 {
+  margin: 0.75rem 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.vacancy-editor h2:first-child {
+  margin-top: 0;
+}
+
+.vacancy-editor p {
+  margin: 0.4rem 0;
+}
+
+.vacancy-editor ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.vacancy-editor pre {
+  margin: 0.5rem 0;
+  overflow-x: auto;
+  border-radius: 0.25rem;
+  background: #f4f4f5;
+  padding: 0.5rem;
+  font-family: monospace;
+}
+
+.vacancy-editor img {
+  max-width: 100%;
+  height: auto;
+}
+
+.vacancy-editor {
+  scrollbar-width: auto;
+  scrollbar-color: #d4d4d8 #f4f4f5;
+}
+
+.vacancy-editor::-webkit-scrollbar {
+  width: 12px;
+}
+
+.vacancy-editor::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+
+.vacancy-editor::-webkit-scrollbar-thumb {
+  border: 3px solid #f4f4f5;
+  border-radius: 9999px;
+  background: #d4d4d8;
+}
+
+.vacancy-editor::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
